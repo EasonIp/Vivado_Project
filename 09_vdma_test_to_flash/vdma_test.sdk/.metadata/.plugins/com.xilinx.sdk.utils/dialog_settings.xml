@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item value="F:\AX7020\vivado_project\09_vdma_test_to_flash\vdma_test.sdk\vdma_test\Debug" key="bootgen_files_selection"/>
+	<item value="F:\AX7020\vivado_project\09_vdma_test_to_flash" key="zynq_flash_files_selection"/>
+	<item value="E:\AX7010\labs\vdma_test_to_flash\vdma_test.sdk" key="hwspec_file_selection"/>
+	<item value="F:\AX7020\vivado_project\09_vdma_test_to_flash" key="last_stored_selection"/>
+</section>

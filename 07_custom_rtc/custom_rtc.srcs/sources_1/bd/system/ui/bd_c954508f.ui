@@ -1,0 +1,30 @@
+{
+   guistr: "# # String gsaved with Nlview 6.5.5  2015-06-26 bk=1.3371 VDI=38 GEI=35 GUI=JA:1.6
+#  -string -flagsOSRD
+preplace port DDR -pg 1 -y 240 -defaultsOSRD
+preplace port FIXED_IO -pg 1 -y 260 -defaultsOSRD
+preplace port DS1302_SCLK -pg 1 -y 330 -defaultsOSRD
+preplace port DS1302_RST -pg 1 -y 310 -defaultsOSRD
+preplace port DS1302_SIO -pg 1 -y 350 -defaultsOSRD
+preplace inst rtc_ip_0 -pg 1 -lvl 3 -y 330 -defaultsOSRD
+preplace inst rst_processing_system7_0_50M -pg 1 -lvl 1 -y 100 -defaultsOSRD
+preplace inst processing_system7_0_axi_periph -pg 1 -lvl 2 -y 110 -defaultsOSRD
+preplace inst processing_system7_0 -pg 1 -lvl 1 -y 280 -defaultsOSRD
+preplace netloc processing_system7_0_DDR 1 1 3 NJ 240 NJ 240 NJ
+preplace netloc processing_system7_0_axi_periph_M00_AXI 1 2 1 680
+preplace netloc rst_processing_system7_0_50M_interconnect_aresetn 1 1 1 400
+preplace netloc processing_system7_0_M_AXI_GP0 1 1 1 390
+preplace netloc processing_system7_0_FCLK_RESET0_N 1 0 2 30 190 370
+preplace netloc rst_processing_system7_0_50M_peripheral_aresetn 1 1 2 400 350 N
+preplace netloc rtc_ip_0_DS1302_SCLK 1 3 1 NJ
+preplace netloc processing_system7_0_FIXED_IO 1 1 3 NJ 260 NJ 260 NJ
+preplace netloc Net 1 3 1 NJ
+preplace netloc processing_system7_0_FCLK_CLK0 1 0 3 20 10 380 300 670
+preplace netloc rtc_ip_0_DS1302_RST 1 3 1 NJ
+levelinfo -pg 1 0 200 550 820 960 -top 0 -bot 400
+",
+}
+{
+   da_axi4_cnt: "1",
+   da_ps7_cnt: "1",
+}

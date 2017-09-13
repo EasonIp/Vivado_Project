@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item value="E:\AX7010\labs\vdma_test" key="bootgen_files_selection"/>
+	<item value="F:\AX7020\vivado_project\08_vdma_test\vdma_test.runs\impl_1" key="program_fpga_view_bit_bmm_browse_key"/>
+	<item value="E:\AX7010\labs\vdma_test" key="zynq_flash_files_selection"/>
+	<item value="F:\AX7020\vivado_project\08_vdma_test\vdma_test.runs\impl_1" key="last_stored_selection"/>
+	<item value="F:\AX7020\vivado_project\08_vdma_test\vdma_test.runs\impl_1" key="tcl_debug_files_selection"/>
+</section>

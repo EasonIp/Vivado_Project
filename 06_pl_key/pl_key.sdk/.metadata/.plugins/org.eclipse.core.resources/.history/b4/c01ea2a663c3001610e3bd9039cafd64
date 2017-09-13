@@ -1,0 +1,219 @@
+#include "xparameters.h"
+
+#include "xscugic.h"
+
+#include "xil_exception.h"
+
+#include "xgpio.h"
+
+// Parameter definitions
+
+#define INTC_DEVICE_ID      XPAR_PS7_SCUGIC_0_DEVICE_ID
+
+#define LED_DEVICE_ID       XPAR_AXI_GPIO_0_DEVICE_ID
+
+#define BTNS_DEVICE_ID      XPAR_AXI_GPIO_1_DEVICE_ID
+
+#define INTC_GPIO_INTERRUPT_ID XPAR_FABRIC_AXI_GPIO_1_IP2INTC_IRPT_INTR
+
+#define BTN_INT             XGPIO_IR_CH1_MASK // This is the interrupt mask for channel one
+
+
+XGpio   LED;
+
+XGpio   BTNInst;
+
+XScuGic INTCInst;
+
+static u8 btn_value;
+
+//----------------------------------------------------
+
+// PROTOTYPE FUNCTIONS
+
+//----------------------------------------------------
+
+static void BTN_Intr_Handler(void *baseaddr_p);
+
+static int InterruptSystemSetup(XScuGic *XScuGicInstancePtr);
+
+static int IntcInitFunction(u16 DeviceId, XGpio *GpioInstancePtr);
+
+//----------------------------------------------------
+
+//  INTERRUPT SERVICE ROUTINE(ISR)
+
+//also know as : INTERRUPT HANDLER FUNCTION
+
+// - called by the buttons interrupt, performs push buttons read
+
+//----------------------------------------------------
+
+void BTN_Intr_Handler(void *InstancePtr)
+
+{
+
+unsigned char led_val = 0;
+
+// Ignore additional button presses
+
+if ((XGpio_InterruptGetStatus(&BTNInst) & BTN_INT) !=
+
+            BTN_INT) {
+
+return;
+
+// Disable GPIO interrupts
+
+    XGpio_InterruptDisable(&BTNInst, BTN_INT);
+
+             }
+
+    btn_value = ~XGpio_DiscreteRead(&BTNInst, 1)&0x0f;
+
+switch (btn_value){
+
+case 0x01: led_val = 0x01; break;
+
+case 0x02: led_val = 0x02; break;
+
+case 0x04: led_val = 0x04; break;
+
+case 0x08: led_val = 0x08; break;
+
+
+default:break;  }
+
+    XGpio_DiscreteWrite(&LED,1,~led_val);
+
+// Acknowledge GPIO interrupts
+
+    (void)XGpio_InterruptClear(&BTNInst, BTN_INT);
+
+// Enable GPIO interrupts
+
+    XGpio_InterruptEnable(&BTNInst, BTN_INT);
+
+}
+
+//----------------------------------------------------
+
+// MAIN FUNCTION
+
+//----------------------------------------------------
+
+int main (void)
+
+{
+
+int status;
+
+// 初始化按键
+
+  status = XGpio_Initialize(&BTNInst, BTNS_DEVICE_ID);
+
+if(status != XST_SUCCESS) return XST_FAILURE;
+
+//初始化LED
+
+  status = XGpio_Initialize(&LED, LED_DEVICE_ID);
+
+if(status != XST_SUCCESS) return XST_FAILURE;
+
+// 设置按键IO的方向为输入
+
+  XGpio_SetDataDirection(&BTNInst, 1, 0xF);
+
+//设置LED IO的方向为输出
+
+  XGpio_SetDataDirection(&LED, 1, 0x00);
+
+//设置LED 灯熄灭
+
+  XGpio_DiscreteWrite(&LED,1,0x0f);
+
+// 初始化按键的中断控制器
+
+  status = IntcInitFunction(INTC_DEVICE_ID, &BTNInst);
+
+if(status != XST_SUCCESS) return XST_FAILURE;
+
+while(1){
+
+  }
+
+return (0);
+
+}
+
+//----------------------------------------------------
+
+// INTERRUPT SETUP FUNCTIONS
+
+//----------------------------------------------------
+
+int IntcInitFunction(u16 DeviceId, XGpio *GpioInstancePtr)
+
+{
+
+XScuGic_Config *IntcConfig;
+
+int status;
+
+// Interrupt controller initialization
+
+    IntcConfig = XScuGic_LookupConfig(DeviceId);
+
+    status = XScuGic_CfgInitialize(&INTCInst, IntcConfig, IntcConfig->CpuBaseAddress);
+
+if(status != XST_SUCCESS) return XST_FAILURE;
+
+// Call interrupt setup function
+
+    status = InterruptSystemSetup(&INTCInst);
+
+if(status != XST_SUCCESS) return XST_FAILURE;
+
+// Register GPIO interrupt handler
+
+    status = XScuGic_Connect(&INTCInst,
+
+                             INTC_GPIO_INTERRUPT_ID,
+
+                             (Xil_ExceptionHandler)BTN_Intr_Handler,
+
+                             (void *)GpioInstancePtr);
+
+if(status != XST_SUCCESS) return XST_FAILURE;
+
+// Enable GPIO interrupts
+
+    XGpio_InterruptEnable(GpioInstancePtr, 1);
+
+    XGpio_InterruptGlobalEnable(GpioInstancePtr);
+
+// Enable GPIO interrupts in the controller
+
+    XScuGic_Enable(&INTCInst, INTC_GPIO_INTERRUPT_ID);
+
+return XST_SUCCESS;
+
+}
+
+int InterruptSystemSetup(XScuGic *XScuGicInstancePtr)
+
+{
+
+// Register GIC interrupt handler
+
+    Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT,
+
+                                 (Xil_ExceptionHandler)XScuGic_InterruptHandler,
+
+                                 XScuGicInstancePtr);
+
+    Xil_ExceptionEnable();
+
+return XST_SUCCESS;
+
+}

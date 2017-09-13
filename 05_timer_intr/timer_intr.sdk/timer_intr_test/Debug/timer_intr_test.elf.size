@@ -1,0 +1,2 @@
+   text	   data	    bss	    dec	    hex	filename
+  65080	   3096	  22684	  90860	  162ec	timer_intr_test.elf
